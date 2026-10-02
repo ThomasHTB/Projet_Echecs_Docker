@@ -18,5 +18,7 @@ Ce projet nous permet ainsi de mettre en pratique plusieurs notions liées au d�
 
 
 Thomas H → Frontend : échiquier + interface.
+
 Raphael B → Backend : règles, parties, WebSocket.
+
 Martin GK → Database + Docker : PostgreSQL, modèles de données, Dockerfiles, docker-compose, sécurité.
