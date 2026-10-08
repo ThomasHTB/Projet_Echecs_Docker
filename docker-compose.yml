@@ -1,4 +1,5 @@
 services:
+  # ---------- Base de données ----------
   db:
     image: postgres:16-alpine          # image officielle, version figée, légère
     restart: unless-stopped            # redémarre si ça plante, sauf arrêt manuel
@@ -16,7 +17,25 @@ services:
     networks:
       - back-net                       # réseau interne uniquement, aucun port exposé
 
+  # ---------- Backend (FastAPI : API + WebSocket) ----------
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+    depends_on:
+      db:
+        condition: service_healthy     # attend que Postgres soit prêt
+    ports:
+      - "${BACKEND_PORT}:8000"         # TEMPORAIRE pour tester, à retirer quand le frontend sera prêt
+    networks:
+      - front-net
+      - back-net
+
 networks:
+  front-net:
   back-net:
     internal: true                     # pas d'accès depuis l'extérieur
 
