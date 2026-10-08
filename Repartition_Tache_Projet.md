@@ -1,4 +1,4 @@
-Contexte du projet
+# Contexte du projet
 
 Dans le cadre de notre projet, nous avons choisi de développer une application web permettant à plusieurs utilisateurs de jouer aux échecs en ligne depuis des postes différents.
 
@@ -16,9 +16,11 @@ L'ensemble de l'application sera conteneurisé avec Docker Compose, permettant d
 
 Ce projet nous permet ainsi de mettre en pratique plusieurs notions liées au développement web et à la conteneurisation : création d'une API, communication temps réel, gestion d'une base de données, création de Dockerfiles, orchestration de plusieurs conteneurs, gestion des réseaux Docker et mise en place de bonnes pratiques de sécurité.
 
+# Répartition de l'équipe : projet échecs en ligne
 
-Thomas H → Frontend : échiquier + interface.
 
-Raphael B → Backend : règles, parties, WebSocket.
-
-Martin GK → Database + Docker : PostgreSQL, modèles de données, Dockerfiles, docker-compose, sécurité.
+| Membre | Rôle | Responsabilités |
+|---|---|---|
+| **Thomas H** | Frontend + client temps réel | Échiquier, interface, pages login / lobby (créer ou rejoindre une partie), **client WebSocket** (envoi et réception des coups, reconnexion) |
+| **Raphael B** | Backend + données | API, gestion des parties, serveur WebSocket, règles **via une bibliothèque** (chess.js ou python-chess, pas de moteur maison), **schéma et ORM**, migrations |
+| **Martin GK** | Infra + sécurité | Dockerfiles (multi-stage, utilisateur non-root), docker-compose, réseaux (BDD isolée sur un réseau interne), **conteneur PostgreSQL** (volume, script d'init, secrets en `.env`), sécurité (hash des mots de passe, CORS, variables d'environnement), README de lancement |
