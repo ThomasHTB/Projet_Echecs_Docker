@@ -28,11 +28,20 @@ services:
     depends_on:
       db:
         condition: service_healthy     # attend que Postgres soit prêt
-    ports:
-      - "${BACKEND_PORT}:8000"         # TEMPORAIRE pour tester, à retirer quand le frontend sera prêt
-    networks:
+    networks:                          # aucun port exposé : on passe par Nginx
       - front-net
       - back-net
+
+  # ---------- Frontend (Nginx : fichiers statiques + reverse proxy) ----------
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT}:8080"        # SEUL port ouvert sur la machine
+    depends_on:
+      - backend
+    networks:
+      - front-net
 
 networks:
   front-net:
