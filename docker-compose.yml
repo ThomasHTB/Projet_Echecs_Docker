@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:16-alpine          # image officielle, version figée, légère
+    restart: unless-stopped            # redémarre si ça plante, sauf arrêt manuel
+    environment:                       # valeurs lues dans le .env
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # données persistantes
+    healthcheck:                       # "la base est-elle prête ?"
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - back-net                       # réseau interne uniquement, aucun port exposé
+
+networks:
+  back-net:
+    internal: true                     # pas d'accès depuis l'extérieur
+
+volumes:
+  pgdata:                              # volume nommé géré par Docker
