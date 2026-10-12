@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+  <title>black bishop</title>
+  <g fill="#111111" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M50 12a8 8 0 1 0 0.1 0 M50 24 Q27 42 34 56 Q38 64 50 67 Q62 64 66 56 Q73 42 50 24z"/><path d="M43 40l14 14 M57 40L43 54" fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round"/><path d="M34 68 Q50 76 66 68 L72 78 Q50 88 28 78z M25 87h50v7H25z M18 96h64v7H18z"/>
+  </g>
+</svg>

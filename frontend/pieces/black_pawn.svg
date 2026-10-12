@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+  <title>black pawn</title>
+  <g fill="#111111" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="50" cy="27" r="15"/><path d="M42 43 Q35 51 38 59 L31 73 Q25 81 27 88 H73 Q75 81 69 73 L62 59 Q65 51 58 43z"/><path d="M22 90h56v10H22z"/>
+  </g>
+</svg>

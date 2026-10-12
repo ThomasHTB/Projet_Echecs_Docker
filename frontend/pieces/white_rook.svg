@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+  <title>white rook</title>
+  <g fill="#ffffff" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M20 16h12v10h10V16h16v10h10V16h12v22H20z"/><path d="M27 39h46v36l7 10H20l7-10z"/><path d="M24 48h52v7H24z M24 72h52v7H24z M18 88h64v10H18z"/>
+  </g>
+</svg>

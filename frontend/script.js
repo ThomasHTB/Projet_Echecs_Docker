@@ -1,0 +1,125 @@
+
+const board = document.getElementById("board");
+
+const pieces = [
+  ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+  ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
+  ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
+];
+
+const pieceFiles = {
+  wK: "white_king.svg",
+  wQ: "white_queen.svg",
+  wR: "white_rook.svg",
+  wB: "white_bishop.svg",
+  wN: "white_knight.svg",
+  wP: "white_pawn.svg",
+  bK: "black_king.svg",
+  bQ: "black_queen.svg",
+  bR: "black_rook.svg",
+  bB: "black_bishop.svg",
+  bN: "black_knight.svg",
+  bP: "black_pawn.svg"
+};
+
+const imageBase = "pieces/";
+
+let selected = null;
+let currentTurn = "w";
+
+function renderBoard() {
+  board.innerHTML = "";
+
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const square = document.createElement("div");
+
+      square.classList.add(
+        "square",
+        (row + col) % 2 === 0 ? "light" : "dark"
+      );
+
+      square.dataset.row = row;
+      square.dataset.col = col;
+
+      const piece = pieces[row][col];
+
+      if (
+        selected &&
+        selected.row === row &&
+        selected.col === col
+      ) {
+        square.classList.add("selected");
+      }
+
+      if (piece !== "") {
+        const img = document.createElement("img");
+
+        img.className = "piece";
+        img.src = imageBase + pieceFiles[piece];
+        img.alt = piece;
+        img.draggable = false;
+
+        img.onerror = () => {
+          console.error("Image introuvable :", img.src);
+        };
+
+        square.appendChild(img);
+      }
+
+      square.addEventListener("click", () => {
+        handleSquareClick(row, col);
+      });
+
+      board.appendChild(square);
+    }
+  }
+}
+
+function handleSquareClick(row, col) {
+  const piece = pieces[row][col];
+
+  // Aucune pièce sélectionnée : sélectionner une pièce du joueur.
+  if (selected === null) {
+    if (piece !== "" && piece[0] === currentTurn) {
+      selected = { row, col };
+      renderBoard();
+    }
+
+    return;
+  }
+
+  const fromRow = selected.row;
+  const fromCol = selected.col;
+  const selectedPiece = pieces[fromRow][fromCol];
+
+  // Cliquer sur une autre pièce de son camp change la sélection.
+  if (piece !== "" && piece[0] === currentTurn) {
+    selected = { row, col };
+    renderBoard();
+    return;
+  }
+
+  // Ne pas autoriser la prise d'une pièce de son propre camp.
+  if (piece !== "" && piece[0] === selectedPiece[0]) {
+    return;
+  }
+
+  // Déplacer la pièce et effectuer éventuellement une prise.
+  pieces[row][col] = selectedPiece;
+  pieces[fromRow][fromCol] = "";
+
+  selected = null;
+
+  // Passer au joueur suivant.
+  currentTurn = currentTurn === "w" ? "b" : "w";
+
+  renderBoard();
+}
+
+renderBoard();

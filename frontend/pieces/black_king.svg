@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+  <title>black king</title>
+  <g fill="#111111" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M44 8h12v10h10v8H54v8h-8v-8H36v-8h8z"/><path d="M27 38 Q50 30 73 38 L69 54 Q66 62 72 70 L78 80 H22 L28 70 Q34 62 31 54z"/><path d="M24 82h52v8H24z M18 92h64v8H18z"/>
+  </g>
+</svg>
