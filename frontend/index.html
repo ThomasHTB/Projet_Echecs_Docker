@@ -5,20 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ChessDock</title>
   <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1>♟ ChessDock</h1>
-    <p>Le jeu d'échecs multijoueur</p>
-  </header>
 
-  <main>
-    <h2>Partie de démonstration</h2>
-    <div id="board" aria-label="Échiquier"></div>
-    <p id="status">Échiquier prêt — les joueurs arrivent bientôt !</p>
-  </main>
+  <h1>ChessDock</h1>
 
-  <footer>ChessDock · Projet étudiant</footer>
+  <div id="board"></div>
+
+  <p id="connection-status">Connexion en cours…</p>
+
+  <!-- 1. Dessiner l'échiquier -->
+  <script src="script.js"></script>
+
+  <!-- 2. Gérer la connexion WebSocket -->
+  <script src="websocket.js"></script>
+
+  <!-- 3. Gérer les messages du serveur -->
+  <script src="client.js"></script>
+
 </body>
 </html>
