@@ -41,4 +41,4 @@ const chessSocket = new ChessSocket(
   }
 );
 
-// chessSocket.connect();
+chessSocket.connect();
