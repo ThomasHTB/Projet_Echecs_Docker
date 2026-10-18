@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,17 +11,37 @@
 
   <h1>ChessDock</h1>
 
-  <div id="board"></div>
+  <div class="game-container">
 
-  <p id="connection-status">Connexion en cours…</p>
+    <p id="connection-status">Connexion au serveur en cours…</p>
 
-  <!-- 1. Dessiner l'échiquier -->
+    <section id="lobby">
+      <h2>Jouer aux échecs</h2>
+      <p>Crée une partie et partage son code avec ton adversaire.</p>
+
+      <button id="create-game-btn" type="button" disabled>
+        Créer une partie
+      </button>
+
+      <p id="game-message" role="status" aria-live="polite">
+        En attente de connexion au serveur…
+      </p>
+
+      <div id="game-code-container" hidden>
+        <p>Code de ta partie :</p>
+        <strong id="game-code"></strong>
+        <button id="copy-code-btn" type="button">
+          Copier le code
+        </button>
+      </div>
+    </section>
+
+    <div id="board"></div>
+
+  </div>
+
   <script src="script.js"></script>
-
-  <!-- 2. Gérer la connexion WebSocket -->
   <script src="websocket.js"></script>
-
-  <!-- 3. Gérer les messages du serveur -->
   <script src="client.js"></script>
 
 </body>
