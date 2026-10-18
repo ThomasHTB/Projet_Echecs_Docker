@@ -1,0 +1,39 @@
+# ============================================================
+#  Surcharge pour le DÉVELOPPEMENT (ne pas utiliser en production)
+#
+#  docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+#  Docker Compose FUSIONNE ce fichier avec docker-compose.yml :
+#  seules les clés écrites ici remplacent / complètent la config de base.
+# ============================================================
+services:
+  backend:
+    # Le code local est monté dans le conteneur et Uvicorn redémarre à chaque
+    # sauvegarde d'un .py : pas besoin de reconstruire l'image.
+    volumes:
+      - ./backend:/app:ro
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    environment:
+      WATCHFILES_FORCE_POLLING: "true"  # nécessaire sous Windows/macOS : les changements de fichiers ne remontent pas sinon
+    ports:
+      - "127.0.0.1:8000:8000"          # accès direct à l'API : http://localhost:8000/docs (Swagger)
+
+  frontend:
+    # HTML / CSS / JS modifiés en local = visibles en rechargeant la page.
+    volumes:
+      - ./frontend/index.html:/usr/share/nginx/html/index.html:ro
+      - ./frontend/style.css:/usr/share/nginx/html/style.css:ro
+      - ./frontend/script.js:/usr/share/nginx/html/script.js:ro
+      - ./frontend/websocket.js:/usr/share/nginx/html/websocket.js:ro
+      - ./frontend/client.js:/usr/share/nginx/html/client.js:ro
+      - ./frontend/pieces:/usr/share/nginx/html/pieces:ro
+
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"          # pour se connecter avec un client SQL (DBeaver, psql...)
+
+networks:
+  back-net:
+    # Un conteneur relié UNIQUEMENT à un réseau interne ne peut pas publier de port.
+    # En dev on lève donc cette isolation pour pouvoir ouvrir 5432 et 8000.
+    internal: false

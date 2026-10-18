@@ -1,33 +1,73 @@
+# ============================================================
+#  ChessDock — stack Docker à 3 services
+#
+#     navigateur ──► frontend (Nginx :8080) ──► backend (FastAPI :8000) ──► db (PostgreSQL :5432)
+#                    └──── réseau front-net ────┘└────── réseau back-net (interne) ──────┘
+#
+#  Lancement :  cp .env.example .env   (puis modifier les mots de passe)
+#               docker compose up -d --build
+#  Mode dev  :  docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+# ============================================================
+
+# --- Blocs réutilisables (extension fields + ancres YAML) ---
+x-security: &security
+  security_opt:
+    - no-new-privileges:true          # un processus ne peut jamais gagner plus de droits (ex : via sudo/setuid)
+  cap_drop:
+    - ALL                             # retire toutes les "capabilities" Linux (droits root découpés)
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"                 # rotation des logs : pas de disque rempli par les logs
+      max-file: "3"
+
 services:
   # ---------- Base de données ----------
   db:
     image: postgres:16-alpine          # image officielle, version figée, légère
     restart: unless-stopped            # redémarre si ça plante, sauf arrêt manuel
+    <<: [*security, *logging]
+    # Postgres démarre en root puis bascule sur l'utilisateur "postgres" :
+    # on lui rend uniquement les droits nécessaires à cette bascule.
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
     environment:                       # valeurs lues dans le .env
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - pgdata:/var/lib/postgresql/data   # données persistantes
+      - pgdata:/var/lib/postgresql/data                  # données persistantes (volume nommé)
+      - ./db/init:/docker-entrypoint-initdb.d:ro         # schéma SQL exécuté au 1er démarrage (lecture seule)
     healthcheck:                       # "la base est-elle prête ?"
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512M }
     networks:
       - back-net                       # réseau interne uniquement, aucun port exposé
 
-  # ---------- Backend (FastAPI : API + WebSocket) ----------
+  # ---------- Backend (FastAPI : API + WebSocket + règles du jeu) ----------
   backend:
     build: ./backend
+    image: chessdock-backend:latest
     restart: unless-stopped
+    <<: [*security, *logging]
+    read_only: true                    # système de fichiers en lecture seule : rien ne peut être modifié
+    tmpfs:
+      - /tmp                           # seul dossier inscriptible, en mémoire
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}
-      JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGIN: ${CORS_ORIGIN}
     depends_on:
       db:
-        condition: service_healthy     # attend que Postgres soit prêt
+        condition: service_healthy     # attend que Postgres soit VRAIMENT prêt (pas juste démarré)
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 256M, pids: 100 }   # pids : bloque une éventuelle "fork bomb"
     networks:                          # aucun port exposé : on passe par Nginx
       - front-net
       - back-net
@@ -35,18 +75,26 @@ services:
   # ---------- Frontend (Nginx : fichiers statiques + reverse proxy) ----------
   frontend:
     build: ./frontend
+    image: chessdock-frontend:latest
     restart: unless-stopped
+    <<: [*security, *logging]
+    read_only: true
+    tmpfs:
+      - /tmp                           # Nginx y écrit son PID et ses fichiers temporaires
     ports:
       - "${FRONTEND_PORT}:8080"        # SEUL port ouvert sur la machine
     depends_on:
       - backend
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 128M, pids: 100 }
     networks:
       - front-net
 
 networks:
-  front-net:
+  front-net:                           # navigateur <-> Nginx <-> backend
   back-net:
-    internal: true                     # pas d'accès depuis l'extérieur
+    internal: true                     # pas d'accès Internet, invisible depuis la machine hôte
 
 volumes:
-  pgdata:                              # volume nommé géré par Docker
+  pgdata:                              # volume nommé géré par Docker : survit à "docker compose down"
