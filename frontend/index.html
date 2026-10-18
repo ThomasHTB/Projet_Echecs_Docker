@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,35 +9,76 @@
 <body>
 
   <h1>ChessDock</h1>
+  <p class="subtitle">Échecs en ligne — Nginx · FastAPI · PostgreSQL, le tout sous Docker</p>
 
   <div class="game-container">
 
-    <p id="connection-status">Connexion au serveur en cours…</p>
+    <p id="connection-status" class="status">Connexion au serveur en cours…</p>
 
-    <section id="lobby">
-      <h2>Jouer aux échecs</h2>
-      <p>Crée une partie et partage son code avec ton adversaire.</p>
+    <!-- ===== Lobby : créer ou rejoindre une partie ===== -->
+    <section id="lobby" class="lobby">
+      <label class="field">
+        <span>Ton pseudo</span>
+        <input id="name-input" type="text" maxlength="20" autocomplete="nickname" placeholder="ex : Magnus">
+      </label>
 
-      <button id="create-game-btn" type="button" disabled>
-        Créer une partie
-      </button>
+      <div class="lobby-actions">
+        <div class="lobby-card">
+          <h2>Nouvelle partie</h2>
+          <p>Tu joues les blancs. Partage le code avec ton adversaire.</p>
+          <button id="create-game-btn" type="button" disabled>Créer une partie</button>
+        </div>
 
-      <p id="game-message" role="status" aria-live="polite">
-        En attente de connexion au serveur…
-      </p>
-
-      <div id="game-code-container" hidden>
-        <p>Code de ta partie :</p>
-        <strong id="game-code"></strong>
-        <button id="copy-code-btn" type="button">
-          Copier le code
-        </button>
+        <div class="lobby-card">
+          <h2>Rejoindre</h2>
+          <p>Entre le code reçu. Tu joues les noirs.</p>
+          <div class="join-row">
+            <input id="code-input" type="text" maxlength="6" placeholder="CODE" autocomplete="off" spellcheck="false">
+            <button id="join-game-btn" type="button" disabled>Rejoindre</button>
+          </div>
+        </div>
       </div>
     </section>
 
-    <div id="board"></div>
+    <p id="game-message" class="message" role="status" aria-live="polite"></p>
+
+    <!-- ===== Partie en cours ===== -->
+    <section id="game" class="game" hidden>
+      <div class="game-header">
+        <div>
+          Code : <strong id="game-code" class="game-code"></strong>
+          <button id="copy-code-btn" type="button" class="small">Copier</button>
+        </div>
+        <div class="game-buttons">
+          <button id="resign-btn" type="button" class="small">Abandonner</button>
+          <button id="leave-btn" type="button" class="small">Quitter</button>
+        </div>
+      </div>
+
+      <div class="player-bar" id="opponent-bar"></div>
+      <div id="board"></div>
+      <div class="player-bar" id="me-bar"></div>
+
+      <details class="moves">
+        <summary>Historique des coups</summary>
+        <ol id="moves-list"></ol>
+      </details>
+    </section>
 
   </div>
+
+  <!-- Choix de la pièce lors d'une promotion de pion -->
+  <dialog id="promotion-dialog">
+    <p>Promouvoir le pion en :</p>
+    <form method="dialog" class="promotion-choices">
+      <button value="q">Dame</button>
+      <button value="r">Tour</button>
+      <button value="b">Fou</button>
+      <button value="n">Cavalier</button>
+    </form>
+  </dialog>
+
+  <footer>Projet Docker — 3 conteneurs : frontend (Nginx), backend (FastAPI), db (PostgreSQL)</footer>
 
   <script src="script.js"></script>
   <script src="websocket.js"></script>
