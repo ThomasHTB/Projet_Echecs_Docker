@@ -25,7 +25,6 @@ un serveur web Nginx, une API Python (FastAPI) et une base PostgreSQL.
 - [Vérifier le bon fonctionnement](#vérifier-le-bon-fonctionnement)
 - [Arborescence](#arborescence)
 - [Dépannage](#dépannage)
-- [Équipe](#équipe)
 
 ---
 
@@ -346,13 +345,3 @@ Projet_Echecs_Docker/
 | Code modifié non pris en compte | `docker compose up -d --build`, ou utiliser le mode développement |
 
 ---
-
-## Équipe
-
-| Membre | Rôle |
-|---|---|
-| **Thomas H** | Frontend et client temps réel |
-| **Raphael B** | Backend et données |
-| **Martin GK** | Infrastructure Docker et sécurité |
-
-Répartition détaillée : [Repartition_Tache_Projet.md](Repartition_Tache_Projet.md).
