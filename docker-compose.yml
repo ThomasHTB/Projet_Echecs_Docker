@@ -52,7 +52,11 @@ services:
 
   # ---------- Backend (FastAPI : API + WebSocket + règles du jeu) ----------
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      args:                            # proxy de la fac (vide ailleurs) : pip doit passer par lui pour télécharger
+        http_proxy: ${http_proxy:-}
+        https_proxy: ${https_proxy:-}
     image: chessdock-backend:latest
     restart: unless-stopped
     <<: [*security, *logging]
